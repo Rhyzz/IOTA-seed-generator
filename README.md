@@ -1,6 +1,6 @@
 # IOTA Seed Generator
 
-[Plugin's Homepage with Demo](http://www.rhyzz.com/iota-seed-generator.html)
+[Tool's Homepage](http://www.rhyzz.com/iota-seed-generator.html)
 
 ## Description
 

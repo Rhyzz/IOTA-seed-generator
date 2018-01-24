@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>IOTA Seed Generator</title>
+<script>
+function generate_seed() {
+	var characters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '9'];
+
+	var seed = [];
+
+	var random;
+	
+	var i, j;
+
+	for(i = 1; i <= 81; i++) {
+		for(j = 1; j <= Math.floor((Math.random() * 10000) + 1); j++) {
+			random = Math.floor((Math.random() * 27) + 1);
+		}
+
+		seed.push(characters[random - 1]);
+	}
+
+	return seed.join('');
+}
+
+window.onload = function() {
+	document.getElementById('generate').onclick = function() {
+		document.getElementById('seed').innerHTML = generate_seed();
+	}
+}
+</script>
+</head>
+<body>
+<h1>IOTA Seed Generator</h1>
+
+<p>A very basic, strictly browser-based tool that lets you generate an IOTA seed.</p>
+
+<p>Do not use load this tool from a server! Make sure to download a local copy of it and load this file using your browser.</p>
+
+<p>Be sure to check the source of this tool to ensure that no external JavaScript is being loaded! You will want to search for an src attribute that is used for loading a JavaScript file.</p>
+
+<p>If you see any such reference then the version you have downloaded is compromised! Do not use that version to generate a seed!</p>
+
+<address>
+	<button id="generate">Generate Seed</button>
+
+	Your Seed:
+
+	<span id="seed" style="font-family: monospace; font-size: 2em;">Click button to generate a seed</span>
+</address>
+
+<h2>Donations are welcome!</h2>
+
+<p>IOTA: FWQOFSMOMMVM9BXXZANEQOBDHWBDGYLXTRJTXSZIWVM9N9Z9JPRUBTLE9CRXBZYCW99OSIQ9NHNKDGOXXMDEKY9GQW</p>
+<p>BTC: 15UFaeeSM1Wn46uJxBg4B5umTVrJghdkA3</p>
+<p>ETH: 0x685c60C341ED1a9aAe87c31364Adf34fe0C3F61A</p>
+<p>XRP: rNaQkgWR2pbgMerCorqXLgepKkQQAfCNLL</p>
+</body>
+</html>

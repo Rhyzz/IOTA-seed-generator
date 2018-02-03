@@ -3,8 +3,58 @@
 <head>
 <meta charset="utf-8">
 <title>IOTA Seed Generator</title>
+<style>
+body {
+	margin: 0; padding: 25px;
+	background-color: #043e56;
+	font-family: sans-serif; font-size: 15px;
+	color: #fff;
+}
+#logo {
+	margin: 0 0 20px 0;
+	text-align: center;
+}
+#title {
+	text-align: center;
+}
+#seed {
+	font-family: monospace; font-size: 2em;
+}
+</style>
 <script>
+var characters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '9'];
+	
+function get_random_number(minimum, maximum) {       
+    var random_buffer = new Uint32Array(1);
+
+    window.crypto.getRandomValues(random_buffer);
+
+    var random_number = random_buffer[0] / (0xffffffff + 1);
+
+    return Math.floor(random_number * (maximum - minimum + 1)) + minimum;
+}
+
 function generate_seed() {
+	var seed = [];
+
+	var random;
+	
+	var i, j;
+
+	for(i = 1; i <= 81; i++) {
+		var j_maximum = get_random_number(1000, 10000);
+
+		for(j = 1; j <= j_maximum; j++) {
+			random = get_random_number(1, 27);
+		}
+
+		seed.push(characters[random - 1]);
+	}
+
+	return seed.join('');
+}
+	
+function generate_21_characters_partial_seed() {
 	var characters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '9'];
 
 	var seed = [];
@@ -13,10 +63,14 @@ function generate_seed() {
 	
 	var i, j;
 
-	for(i = 1; i <= 81; i++) {
-		for(j = 1; j <= Math.floor((Math.random() * 10000) + 1); j++) {
-			random = Math.floor((Math.random() * 27) + 1);
-		}
+	for(i = 1; i <= 27; i++) {
+		do {
+			var j_maximum = get_random_number(1000, 10000);
+
+			for(j = 1; j <= j_maximum; j++) {
+				random = get_random_number(1, 27);
+			}
+		} while(seed.indexOf(characters[random - 1]) !== -1);
 
 		seed.push(characters[random - 1]);
 	}
@@ -26,13 +80,48 @@ function generate_seed() {
 
 window.onload = function() {
 	document.getElementById('generate').onclick = function() {
-		document.getElementById('seed').innerHTML = generate_seed();
+		var seed;
+
+		if(document.getElementById('limit').checked === true) {
+			seed = '';
+
+			for(var i = 1; i <= 3; i++) {
+				seed += generate_21_characters_partial_seed();
+			}
+		}
+		else {
+			seed = generate_seed();
+		}
+
+		document.getElementById('seed').innerHTML = seed;
+
+		var breakdown = {};
+
+		var split = seed.split('');
+
+		for(var i = 0; i < 27; i++) {
+			for(var j = 0; j < split.length; j++) {
+				if(characters[i] == split[j]) {
+					typeof breakdown[characters[i]] === 'undefined' ? breakdown[characters[i]] = 1 : breakdown[characters[i]]++;
+				}
+			}
+		}
+		
+		var content = '';
+
+		for(var i = 0; i < 27; i++) {
+			content += '<li>' + characters[i] + ': ' + (typeof breakdown[characters[i]] === 'undefined' ? '<span style="font-weight: bold; color: #c00;">0</span>' : breakdown[characters[i]]) + '</li>';
+		}
+		
+		document.getElementById('breakdown').innerHTML = content;
 	}
 }
 </script>
 </head>
 <body>
-<h1>IOTA Seed Generator</h1>
+<div id="logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADsAAAArCAYAAADG8/AoAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM4IDc5LjE1OTgyNCwgMjAxNi8wOS8xNC0wMTowOTowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTcgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkVCQzA1OTZCMDRGRjExRTg4OEEyRUU0RjhENjFEQkZEIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkVCQzA1OTZDMDRGRjExRTg4OEEyRUU0RjhENjFEQkZEIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6RUJDMDU5NjkwNEZGMTFFODg4QTJFRTRGOEQ2MURCRkQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6RUJDMDU5NkEwNEZGMTFFODg4QTJFRTRGOEQ2MURCRkQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6EhfHdAAAGQUlEQVR42uxa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" alt="" /></div>
+
+<h1 id="title">IOTA Seed Generator</h1>
 
 <p>A very basic, strictly browser-based tool that lets you generate an IOTA seed.</p>
 
@@ -42,13 +131,25 @@ window.onload = function() {
 
 <p>If you see any such reference then the version you have downloaded is compromised! Do not use that version to generate a seed!</p>
 
-<address>
+<div>
+	<p><label><input type="checkbox" id="limit" value="Yes" /> Tick this to use every possible character exactly three times (NOT RECOMMENDED!)</label></p>
+
 	<button id="generate">Generate Seed</button>
 
-	Your Seed:
+	<p>Your Seed:<br /><span id="seed">Click button above to generate a seed</span></p>
+	
+	<div id="count">
+		<p><strong>Character Count:</strong></p>
+		
+		<ul id="breakdown"></ul>
+	</div>
+</div>
 
-	<span id="seed" style="font-family: monospace; font-size: 2em;">Click button to generate a seed</span>
-</address>
+<h2>Tips</h2>
+
+<p>Use a seed that includes at least one of each possible character</p>
+
+<p>Do not tick the "Use every possible character" checkbox. It's there for advanced users only who would like to modify the generated seed themselves before using it</p>
 
 <h2>Donations are welcome!</h2>
 
